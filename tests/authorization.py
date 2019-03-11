@@ -7,7 +7,10 @@ import os
 
 @pytest.fixture
 def driver(request):
-    wd = webdriver.Chrome()
+    # wd = webdriver.Ie(capabilities={"requireWindowFocus": True})
+    wd = webdriver.Firefox(capabilities={"marionette": True})
+    # wd = webdriver.Chrome(capabilities={"unexpectedAlertBehaviour": "dismiss"})
+    print(wd.capabilities)
     request.addfinalizer(wd.quit)
     return wd
 
