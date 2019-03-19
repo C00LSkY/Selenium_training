@@ -28,8 +28,13 @@ def test_login(driver):
     wait.until(EC.title_is("My Store"))
 
 
-def auth(driver):
+def auth_admin(driver):
     driver.get("http://litecart/admin/login.php")
     driver.find_element_by_xpath("//input[@name='username']").send_keys("admin")
     driver.find_element_by_xpath("//input[@name='password']").send_keys("admin")
     driver.find_element_by_xpath("//button[@name='login']").click()
+
+
+def auth(driver):
+    driver.get("http://litecart/en/")
+
