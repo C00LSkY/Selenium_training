@@ -27,14 +27,19 @@ def test_menu_elements(driver):
     for a in range(len(list_page_header)):
         print(list_page_header[a] + " : " + list_name_header[a])
 
+countries = []
 
-def test_sticker_presents(driver):
-    auth(driver)
-    # поиск всех картинок товара
-    list_image = driver.find_elements_by_css_selector('.product .image')
-    # количество стикеров
-    sticker = driver.find_elements_by_css_selector('ul.listing-wrapper.products .sticker')
-    assert int(len(sticker)) == int(len(list_image))
+def test_geozone(driver):
+    driver.get('http://litecart/admin/?app=countries&doc=countries')
+    list_countries = driver.find_elements_by_css_selector('table.dataTable tr.row')
+    for c in range(len(list_countries)):
+        countries_one = driver.find_element_by_css_selector('table.dataTable tr.row:nth-child(' + str(int(c+2)) + ') td:nth-child(5)')
+        countries_params = countries_one.get_attribute("innerText")
+        countries.append(countries_params)
+    assert countries == sorted(countries)
+
+
+
 
 
 
