@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from tests.authorization import *
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
+import time
 
 list_page_header =[]
 list_name_header =[]
@@ -68,6 +69,40 @@ def test_geozone(driver):
                 geo.append(geozone_params)
         assert geo == sorted(geo)
     driver.get('http://litecart/admin/?app=geo_zones&doc=geo_zones')
+
+
+def test_created_new_product(driver):
+    auth_admin(driver)
+    driver.get('http://litecart/admin/?app=catalog&doc=catalog')
+    driver.find_element_by_css_selector('a.button[href="http://litecart/admin/?category_id=0&app=catalog&doc=edit_product"]').click()
+    driver.find_element_by_css_selector('input[name="name[en]"]').send_keys("smal cat")
+    driver.find_element_by_css_selector('input[name="code"]').send_keys("555555")
+    driver.find_element_by_css_selector('input[value="1-3"]').click()
+    driver.find_element_by_css_selector('input[name="quantity"]').send_keys("100")
+    path_image = str(os.getcwd() + "\\test_data\\smal_cat.jpg")
+    driver.find_element_by_css_selector('input[name="new_images[]"]').send_keys(path_image)
+    driver.find_element_by_css_selector('a[href="#tab-information"]').click()
+    time.sleep(1)
+    driver.find_element_by_css_selector('select[name="manufacturer_id"] > option[value="1"]').click()
+    driver.find_element_by_css_selector('input[name="keywords"]').send_keys("cat")
+    driver.find_element_by_css_selector('input[name="short_description[en]"]').send_keys("super cat")
+    driver.find_element_by_css_selector('div[class="trumbowyg-editor"]').send_keys("super cat, great toy")
+    driver.find_element_by_css_selector('a[href="#tab-prices"]').click()
+    time.sleep(1)
+    driver.find_element_by_css_selector('input[name="purchase_price"]').send_keys("110")
+    driver.find_element_by_css_selector('select[name="purchase_price_currency_code"] > option[value="USD"]').click()
+    driver.find_element_by_css_selector('button[name="save"]').click()
+    driver.get('http://litecart/admin/?app=catalog&doc=catalog')
+    assert driver.find_elements_by_link_text('smal cat') != []
+
+
+
+
+
+
+
+
+
 
 
 
