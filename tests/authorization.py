@@ -38,3 +38,4 @@ def auth_admin(driver):
 def auth(driver):
     driver.get("http://litecart/en/")
 
+
