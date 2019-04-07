@@ -5,9 +5,11 @@ import time
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
-fake = Faker()
+
+
 
 @pytest.fixture(scope='session', autouse=True)
 def driver(request):
@@ -15,10 +17,13 @@ def driver(request):
     # wd = webdriver.Firefox(capabilities={"marionette": True})
     # wd = webdriver.Firefox(capabilities={"marionette": False}, firefox_binary={"c:\\Program Files (x86)\\Nightly\\firefox.exe"})
     wd = webdriver.Chrome()
-    #driver.implicitly_wait(10)
+    # driver.implicitly_wait(10)
     print(wd.capabilities)
     request.addfinalizer(wd.quit)
     return wd
+
+fake = Faker()
+wait = WebDriverWait(driver, 10)  # seconds
 
 def auth(driver):
     driver.get("http://litecart/en/")
@@ -96,5 +101,40 @@ def test_registration_new_user(driver):
     driver.find_element_by_css_selector('button[name="login"]').click()
     assert driver.find_elements_by_css_selector('a[href="http://litecart/en/logout"]') != [], 'USER NOT LOGIN'
     driver.find_element_by_css_selector('a[href="http://litecart/en/logout"]').click()
+
+
+def test_add_to_cart(driver):
+    auth(driver)
+    count = 1
+    while int(count) < 3:
+        driver.find_element_by_css_selector('div.content img.image').click()
+        time.sleep(2)
+        if len(driver.find_elements_by_css_selector('a.main-image.fancybox.zoomable.shadow > div.sticker.sale')) > 0:
+            time.sleep(2)
+            driver.find_element_by_css_selector('select[name="options[Size]"] > option[value="Small"]').click()
+            time.sleep(2)
+            driver.find_element_by_css_selector('button[name="add_cart_product"]').click()
+            # time.sleep(2)
+            wait.until(EC.text_to_be_present_in_element(By.CSS_SELECTOR('a.content span.quantity'), str(count)))
+            count = driver.find_element_by_css_selector('span.quantity').get_attribute('innerText')
+            driver.get("http://litecart/en/")
+        else:
+            driver.find_element_by_css_selector('button[name="add_cart_product"]').click()
+            # time.sleep(2)
+            wait.until(EC.text_to_be_present_in_element(By.CSS_SELECTOR('a.content span.quantity'), str(count)))
+            count = driver.find_element_by_css_selector('span.quantity').get_attribute('innerText')
+            driver.get("http://litecart/en/")
+    driver.find_element_by_css_selector('a.link[href="http://litecart/en/checkout"]').click()
+    driver.find_element_by_css_selector('button[name="remove_cart_item"]').click()
+    driver.refresh()
+    driver.find_element_by_css_selector('button[name="remove_cart_item"]').click()
+    driver.refresh()
+    driver.find_element_by_css_selector('button[name="remove_cart_item"]').click()
+    driver.get("http://litecart/en/")
+    time.sleep(5)
+    
+
+
+
 
 
